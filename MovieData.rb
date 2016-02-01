@@ -20,7 +20,7 @@ class MovieData
 
       # This is the top most similar users to user 1
       # Otherwise most_similar will need to be run before predict()
-      #@most_similar_user = [723, 700, 124, 584, 737, 55, 571, 51, 202, 742]
+      @most_similar_user = [723, 700, 124, 584, 737, 55, 571, 51, 202, 742]
     end
   end
 
@@ -197,114 +197,6 @@ class MovieData
     return @training_set
   end
 
-# THE REST OF THE CODE IS FROM PART 1
-
-  def load_data()
-
-    @training_set = open("u.data").read.split(/[\t,\n]/)
-
-    @popular_ratings = []
-    @popular_movies = []
-
-    @most_similar_users = []
-    @most_similar_ratings = []
-
-    # 0 + 4n is user_id
-    # 1 + 4n is movie_id
-    # 2 + 4n is rating
-    # 3 + 4n is timestamp
-  end
-
-
-  def popularity(movie_id)
-    # creates some variables to be used later
-    ratings_total = 0
-    number_of_ratings = 0
-    i = 1
-
-    # loops through dataset by 4 to pick out the
-    # movies and ratings
-    while i <= @training_set.length-1
-      if @training_set[i].to_i == movie_id
-        ratings_total += @training_set[i+1].to_i
-        number_of_ratings += 1
-      end
-
-      i += 4
-    end
-
-    # calculates the average rating per movie
-    avg_rating = ratings_total / number_of_ratings
-    avg_rating_for_return = avg_rating
-
-    j = 0
-
-    # loops through the entire number of movies
-    while j < 1682
-      # When this gets to an unused spot in the array
-      # it will add in the move and rating to their
-      # appropriate arrays
-      if @popular_ratings[j].nil?
-        @popular_ratings.push(avg_rating)
-        @popular_movies.push(movie_id)
-
-        # breaks the while loop or the arrays would be filled
-        # with 1 movie and 1 rating but for the entirety of the arrays
-        break
-
-      else
-        # adds in the movie and its rating in the appropriate locations
-        # this will also shift all elements after the location where the new
-        # movie is added into the array
-        if @popular_ratings[j] < avg_rating
-          temp_rating = @popular_ratings[j]
-          temp_movie = @popular_movies[j]
-
-          @popular_ratings[j] = avg_rating
-          @popular_movies[j] = movie_id
-
-          avg_rating = temp_rating
-          movie_id = temp_movie
-        end
-      end
-
-      j += 1
-    end
-
-    return avg_rating_for_return
-  end
-
-
-  # outputs the top 10 and bottom 10 movies based on popularity
-  def popularity_list()
-    i = 0
-    j = 1672
-    k = 1
-
-    while k <= 1682
-      temp_rate = popularity(k)
-      k += 1
-    end
-
-    puts "The top 10 movies are"
-
-    while i <= 9
-      puts @popular_movies[i]
-
-      i += 1
-    end
-
-    puts ""
-
-    puts "The bottom 10 movies are"
-
-    while j <= @popular_movies.length-1
-      puts @popular_movies[j]
-
-      j += 1
-    end
-  end
-
 
   def similarity(user1, user2)
     i = 0
@@ -377,62 +269,6 @@ class MovieData
     end
 
     return similarity_rating
-
-  end
-
-
-  def most_similar(u)
-    @most_similar_users = []
-    @most_similar_ratings = []
-    i = 1
-
-    while i <= 943
-      if u != i
-        new_rating = similarity(u,i)
-        j = 0
-        k = i
-        while j <= 942
-          if @most_similar_users[j].nil?
-            @most_similar_users.push(k)
-            @most_similar_ratings.push(new_rating)
-            break
-          else
-            if @most_similar_ratings[j] < new_rating
-              temp_rating = @most_similar_ratings[j]
-              temp_user = @most_similar_users[j]
-
-              @most_similar_ratings[j] = new_rating
-              @most_similar_users[j] = k
-
-              new_rating = temp_rating
-              k = temp_user
-            end
-          end
-
-          j += 1
-        end
-      end
-
-      i += 1
-    end
-
-    puts "The top 10 most similar users to user #{u} are"
-
-    i = 0
-    while i <= 9
-      puts @most_similar_users[i]
-      i += 1
-    end
-
-    puts ""
-
-    puts "The bottom 10 most similar user to user #{u} are"
-
-    i = @most_similar_users.length-12
-    while i <= @most_similar_users.length-1
-      puts @most_similar_users[i]
-      i += 1
-    end
 
   end
 end
